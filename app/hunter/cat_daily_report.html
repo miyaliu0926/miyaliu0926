@@ -2228,7 +2228,7 @@ html,body{width:100%;overflow-x:hidden;background:#0A0807}
 .enter-report-btn.vis{animation:gfi .8s ease forwards}
 
 /* ── SEC4 REPORT ── */
-#s-report{background:#FAF6F1;display:none;min-height:auto}
+#s-report{background:var(--cream);display:none;min-height:auto}
 
 /* ── VEIL ── */
 #veil{
@@ -2799,7 +2799,7 @@ html{-webkit-text-size-adjust:100%}
 #s-gallery,#s-cloud,#s-chart{min-height:100vh;min-height:100dvh}
 
 /* — smooth theme morphing instead of a hard snap — */
-body,.hero,.card,.robot-card,.ai-card,.stat,.robot-stat,.mood-i,.tag,.alert,.art-meme-card,.amc-footer,.theme-btn,.bar-bg,.food-item,.ask-btn{
+body,#s-report,.hero,.card,.robot-card,.ai-card,.stat,.robot-stat,.mood-i,.tag,.alert,.art-meme-card,.amc-footer,.theme-btn,.bar-bg,.food-item,.ask-btn{
   transition:background-color .5s ease,border-color .5s ease,color .5s ease,box-shadow .4s ease
 }
 
@@ -2811,7 +2811,7 @@ body,.hero,.card,.robot-card,.ai-card,.stat,.robot-stat,.mood-i,.tag,.alert,.art
 body.theme-ink .hero,body.theme-ink .card,body.theme-ink .robot-card,body.theme-ink .ai-card{box-shadow:0 1px 2px rgba(0,0,0,.45),0 16px 38px -18px rgba(0,0,0,.65)}
 
 /* — hero refinement — */
-.hero-avatar{background:radial-gradient(120% 120% at 30% 25%,#fff 0%,var(--pink-light) 72%);
+.hero-avatar{background:radial-gradient(120% 120% at 30% 25%,var(--warm-white) 0%,var(--pink-light) 72%);
   box-shadow:0 8px 20px -10px rgba(232,146,124,.7),inset 0 0 0 1px rgba(255,255,255,.65)}
 .hero-name{font-size:clamp(20px,5vw,26px);letter-spacing:-.015em}
 
@@ -2852,6 +2852,10 @@ body.theme-ink::after{mix-blend-mode:screen;opacity:.045}
   .ask-row{flex-direction:column}.ask-btn{width:100%}
 }
 @media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* — dark-mode consistency: kill the last hardcoded-light backgrounds so they follow the theme — */
+.art-meme-card{background:var(--warm-white)}
+.ai-av{background:var(--pink-light)}
 </style>
 </head>
 <body>
@@ -3915,6 +3919,26 @@ document.querySelectorAll('.theme-btn').forEach(btn => {
     blocks.forEach(function(el){ el.classList.add('reveal'); ro.observe(el); });
   }
   if (document.readyState !== 'loading') setup(); else document.addEventListener('DOMContentLoaded', setup);
+})();
+
+// ── Follow the OS / browser color scheme: system dark → report auto-switches to the dark theme ──
+// (stops auto-following once the user manually taps a theme; re-follows nothing after that)
+(function(){
+  var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  if (!mq) return;
+  var auto = true, applying = false;
+  document.querySelectorAll('.theme-btn').forEach(function(b){
+    b.addEventListener('click', function(){ if (!applying) auto = false; });   // a real tap opts out of auto-follow
+  });
+  function applySystem(){
+    if (!auto) return;
+    var want = mq.matches ? 'ink' : 'peach';
+    var btn = document.querySelector('.theme-btn[data-theme="' + want + '"]');
+    if (btn) { applying = true; btn.click(); applying = false; }
+  }
+  applySystem();                                   // honor the system setting on load
+  if (mq.addEventListener) mq.addEventListener('change', applySystem);
+  else if (mq.addListener) mq.addListener(applySystem);   // older Safari
 })();
 
 </script>
